@@ -1,4 +1,4 @@
-<div align='center'>Qick Draw Duel</h3></div>
+<div align='center'><h3>Qick Draw Duel</h3></div>
 
 <div align='center'>
   
