@@ -1,5 +1,9 @@
 CURRENT_PROPS = {}
 
+Citizen.CreateThread(function()
+    
+end)
+
 -- Create Blip
 Citizen.CreateThread(function()
     for k, v in pairs(Config.Locations) do
@@ -8,3 +12,4 @@ Citizen.CreateThread(function()
         CREATE_BLIP(v.blip)
     end
 end)
+

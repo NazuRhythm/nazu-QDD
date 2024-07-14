@@ -4,7 +4,7 @@ games {"gta5"}
 author 'Nazu'
 version '1.0.0'
 
-------
+-----------
 -- SHARED
 ------
 shared_script {
@@ -12,9 +12,9 @@ shared_script {
     'shared/**/*.lua',
 }
 
-------
+------------
 -- CLIENT 
-------
+-------
 client_scripts {
     'client/**/*.lua',
 }
@@ -26,14 +26,12 @@ server_scripts {
     'server/**/*.lua',
 }
 
-------
+-----------------
 -- Dependencies 
-------
+---------
 dependencies { 'ox_lib', 'nazu-bridge' }
 
+-----------
+-- STREAM
 ------
--- NUI 
-------
--- ui_page 'web/index.html'
-
--- files {'web/index.html', 'web/style.css', 'web/js/index.js', 'web/images/*'}
+data_file 'DLC_ITYP_REQUEST' 'stream/nz_prop_arm_wrestle_01.ytyp'
