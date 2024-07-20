@@ -1,12 +1,12 @@
 Config = Config or {}
-Locales = Locales or {}
 
 Config.Language = 'en'
 
 Config.Locations = {
 
     ['wdd_1'] = {
-        coords = vector3(-406.06, 1191.51, 325.64),
+        coords = vector3(-420.88, 1196.73, 325.64),
+        radius = 5.0,
         blip = {
             label = 'Quick Draw Duel',
             sprite = 160,
@@ -17,6 +17,7 @@ Config.Locations = {
 
     ['wdd_2'] = {
         coords = vector3(-392.66, 1186.59, 325.64),
+        radius = 5.0,
         blip = {
             label = 'Quick Draw Duel',
             sprite = 160,
@@ -25,4 +26,9 @@ Config.Locations = {
         },
     },
 
+
+}
+
+Config.DebugMode = {
+    ShowPolyZone = true,
 }
