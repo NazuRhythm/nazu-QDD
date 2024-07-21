@@ -3,7 +3,7 @@ function SHOW_HELP(msg, duration)
     BeginTextCommandDisplayHelp("THREESTRINGS")
     AddTextComponentSubstringPlayerName(msg)
 
-    EndTextCommandDisplayHelp(0, false, true)
+    EndTextCommandDisplayHelp(0, false, true, 2000)
 end
 
 function CREATE_BLIP(v)

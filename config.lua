@@ -2,6 +2,8 @@ Config = Config or {}
 
 Config.Language = 'en'
 
+Config.Notify = 'ox' -- 'ox' or 'okok' or 'custom'
+
 Config.Locations = {
 
     ['wdd_1'] = {
@@ -30,5 +32,5 @@ Config.Locations = {
 }
 
 Config.DebugMode = {
-    ShowPolyZone = true,
+    ShowPolyZone = false,
 }
