@@ -57,12 +57,11 @@ function CREATE_PROP_POLYZONE(key, coords, radius)
 
     polyZone:onPlayerInOut(function(isInside)
         if isInside then
-            print('[PolyZone Log] PlayerIn ', key)
 
             PLAYER_ZONE_NAME = key
             START_MONITOR_PLAYER()
         else
-            print('[PolyZone Log] PlayerOut', key)
+
             PLAYER_ZONE_NAME = nil
 
             if JOINED_SESSION_NAME ~= nil then
@@ -86,4 +85,60 @@ function DELETE_PROPS_AND_ZONE()
             v.poly:destroy()
         end
     end
+end
+
+function DrawMainMarker(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
+    DrawMarker(
+        marker,  -- kind of marker
+        coord_x,
+        coord_y,
+        coord_z,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        scale,
+        scale,
+        height,
+        rgba_1,
+        rgba_2,
+        rgba_3,
+        rgba_4,
+        false,
+        true,
+        2,
+        true,
+        nil,
+        false
+    )
+end
+
+function DrawUnderMarker(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
+    DrawMarker(
+        marker,  -- kind of marker
+        coord_x,
+        coord_y,
+        coord_z,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        scale,
+        scale,
+        height,
+        rgba_1,
+        rgba_2,
+        rgba_3,
+        rgba_4,
+        false,
+        true,
+        2,
+        nil,
+        nil,
+        false
+    )
 end
