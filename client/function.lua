@@ -63,8 +63,16 @@ function CREATE_PROP_POLYZONE(key, coords, radius)
             START_MONITOR_PLAYER()
         else
             print('[PolyZone Log] PlayerOut', key)
-
             PLAYER_ZONE_NAME = nil
+
+            if JOINED_SESSION_NAME ~= nil then
+                TriggerServerEvent(resName..':server:RequestForceQuitPlayer')
+                Citizen.CreateThread(function()
+                    exports['nazu-bridge']:ShowScreenEffect('SwitchOpenMichaelOut', 1000)
+                end)
+                PlaySoundFrontend(-1, "Signal_On", "DLC_GR_Ambushed_Sounds", 1)
+            end
+
         end
     end)
 

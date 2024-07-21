@@ -27,7 +27,7 @@ function SHOW_ALERT_DIALOG()
         if result == 'confirm' then
             Citizen.CreateThread(function()
                 STATUS = STATUS_NORMAL
-                TriggerServerEvent(resName..':server:RequestQuitGameSession', PLAYER_ZONE_NAME)
+                TriggerServerEvent(resName..':server:RequestQuitGameSession')
             end)
         end
     end
