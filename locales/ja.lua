@@ -2,8 +2,8 @@ Locales = Locales or {}
 Locales['ja'] = {
 
     HelpMsg = {
-        you_wana_join = '~INPUT_PICKUP~ Join ~g~Quick Draw Duel~s~',
-        you_wana_quit = '~INPUT_PICKUP~ Qit ~g~Quick Draw Duel~s~',
+        you_wana_join = '~INPUT_PICKUP~ ~g~参加する~s~',
+        you_wana_quit = '~INPUT_PICKUP~ ~r~退出する~s~',
     },
 
     JoinMenu  = {
