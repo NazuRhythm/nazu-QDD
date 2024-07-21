@@ -16,9 +16,14 @@ Citizen.CreateThread(function()
                 status = nil,
             },
 
+            -- [2] = {
+            --     player = nil,
+            --     status = nil,
+            -- },
+
             [2] = {
-                player = nil,
-                status = nil,
+                player = 10,
+                status = STATUS_WAITING,
             },
         }
     end
@@ -35,8 +40,20 @@ Citizen.CreateThread(function()
                         (v[2] ~= nil and 'PLAYER[2] = ' .. tostring(v[2].player) .. ' ' .. tostring(v[2].status) or '') .. '\n'
                     )
 
-                    
+                    if (v[1] ~= nil and v[1].status == STATUS_WAITING) and (v[2] ~= nil and v[2].status == STATUS_WAITING) then
+                        for index, table in pairs(v) do
+                            GAME_SESSION[k][index].status = STATUS_PLAYING
+                            TriggerClientEvent(resName..':client:StartTheGame', table.player)
+                        end
+                    end
 
+                    if (v[1] ~= nil and v[1].status == STATUS_FINISHED) and (v[2] ~= nil and v[2].status == STATUS_FINISHED) then
+                        for index, table in pairs(v) do
+                            
+                            TriggerClientEvent(resName..':client:StartTheGame', table.player)
+                        end
+                    end
+                    
                 end
             end
 
@@ -49,6 +66,8 @@ Citizen.CreateThread(function()
         Citizen.Wait(waitTime)
     end
 end)
+
+RegisterNetEvent(resName..':server:Finished')
 
 RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
     local src = source

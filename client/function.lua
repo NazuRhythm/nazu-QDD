@@ -64,7 +64,7 @@ function CREATE_PROP_POLYZONE(key, coords, radius)
 
             PLAYER_ZONE_NAME = nil
 
-            if JOINED_SESSION_NAME ~= nil then
+            if JOINED_SESSION_NAME ~= nil and STATUS ~= STATUS_PLAYING then
                 TriggerServerEvent(resName..':server:RequestForceQuitPlayer')
                 Citizen.CreateThread(function()
                     exports['nazu-bridge']:ShowScreenEffect('SwitchOpenMichaelOut', 1000)
@@ -87,7 +87,13 @@ function DELETE_PROPS_AND_ZONE()
     end
 end
 
-function DrawMainMarker(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
+function DISPLAY_SUBTITLE_FRAME(msg)
+    SetTextEntry_2("STRING")
+    AddTextComponentString(msg)
+    DrawSubtitleTimed(1010, 1)
+end
+
+function DRAW_MAIN_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
     DrawMarker(
         marker,  -- kind of marker
         coord_x,
@@ -115,7 +121,7 @@ function DrawMainMarker(marker, coord_x, coord_y, coord_z, scale, height, rgba_1
     )
 end
 
-function DrawUnderMarker(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
+function DRAW_UNDER_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
     DrawMarker(
         marker,  -- kind of marker
         coord_x,
