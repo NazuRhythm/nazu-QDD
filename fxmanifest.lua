@@ -34,7 +34,7 @@ server_scripts {
 -----------------
 -- Dependencies 
 ---------
-dependencies { 'ox_lib', 'nazu-bridge' }
+dependencies { 'PolyZone' , 'ox_lib', 'nazu-bridge' }
 
 -----------
 -- STREAM
