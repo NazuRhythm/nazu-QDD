@@ -2,9 +2,9 @@
 function GET_JOINING_SESSION(src)
 
     for k, v in pairs(GAME_SESSION) do
-        if v[1].player == src then
+        if v[1].src == src then
             return k, 1
-        elseif v[2].player == src then
+        elseif v[2].src == src then
             return k, 2
         end
     end
@@ -18,4 +18,10 @@ function ALL_PLAYER_STATUS_IS(session, status)
     end
 
     return false
+end
+
+function JUDGE_WINNER(SESSION)
+    local winnerIndex = tonumber(SESSION.PLAYERS[1].score < SESSION.PLAYERS[2] and 1 or 2)
+
+    
 end

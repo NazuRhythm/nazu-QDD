@@ -43,7 +43,7 @@ Citizen.CreateThread(function()
 end)
 
 RegisterNetEvent(resName..':client:StartSetup', function()
-    STATUS = STATUS_PLAYING
+    STATUS = STATUS_SETUPING
     local pedId = PlayerPedId()
     local anim = 'misschinese2_bank5'
 
