@@ -79,6 +79,16 @@ RegisterNetEvent(resName..':client:StartTheGame', function()
     TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
 end)
 
+RegisterNetEvent(resName..':client:ShowWinner', function(IsWinner)
+    if IsWinner then
+        
+    else
+        
+    end
+
+    RESET_PLAYER_INFO()
+end)
+
 RegisterNetEvent(resName..':client:SetJoiningSessionName', function(ZoneName)
     if ZoneName ~= nil then
         JOINED_SESSION_NAME = ZoneName

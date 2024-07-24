@@ -45,9 +45,9 @@ Citizen.CreateThread(function()
                     if SESSION.STATUS == STATUS_WAITING then
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
                             print(k, 'Waiting!')
-                            for index, position in pairs(SESSION) do
+                            for index, player in pairs(SESSION.PLAYERS) do
                                 GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartSetup', position.src)
+                                TriggerClientEvent(resName..':client:StartSetup', player.src)
                             end
 
                             GAME_SESSION[k].STATUS = STATUS_SETUPING
@@ -55,9 +55,9 @@ Citizen.CreateThread(function()
                     elseif SESSION.STATUS == STATUS_SETUPING then
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
                             print(k, 'Finished Setuping')
-                            for index, position in pairs(SESSION) do
+                            for index, player in pairs(SESSION.PLAYERS) do
                                 GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartTheGame', position.src)
+                                TriggerClientEvent(resName..':client:StartTheGame', player.src)
                             end
 
                             GAME_SESSION[k].STATUS = STATUS_PLAYING
@@ -68,36 +68,36 @@ Citizen.CreateThread(function()
                         end
                     end
 
-                    if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
-                        print(k, 'Waiting!')
-                        for index, position in pairs(SESSION) do
-                            GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                            TriggerClientEvent(resName..':client:StartSetup', position.src)
-                        end
+                    -- if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
+                    --     print(k, 'Waiting!')
+                    --     for index, position in pairs(SESSION) do
+                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                    --         TriggerClientEvent(resName..':client:StartSetup', position.src)
+                    --     end
 
 
-                    elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_SETUPING) then
-                        print(k, 'Setuping!')
-                        for index, position in pairs(SESSION) do
-                            GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                            TriggerClientEvent(resName..':client:StartTheGame', position.src)
-                        end
+                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_SETUPING) then
+                    --     print(k, 'Setuping!')
+                    --     for index, position in pairs(SESSION) do
+                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                    --         TriggerClientEvent(resName..':client:StartTheGame', position.src)
+                    --     end
 
-                    elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_READY) then
-                        print(k, 'Ready!')
-                        for index, position in pairs(SESSION) do
-                            GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                            TriggerClientEvent(resName..':client:StartTheGame', position.src)
-                        end
+                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_READY) then
+                    --     print(k, 'Ready!')
+                    --     for index, position in pairs(SESSION) do
+                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                    --         TriggerClientEvent(resName..':client:StartTheGame', position.src)
+                    --     end
 
-                    elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
-                        print(k, 'Finished!')
-                        for index, position in pairs(SESSION) do
-                            TriggerClientEvent(resName..':client:SetJoiningSessionName', position.src)
-                            GAME_SESSION[k].PLAYERS[index].src = nil
-                            GAME_SESSION[k].PLAYERS[index].status = nil
-                        end
-                    end
+                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
+                    --     print(k, 'Finished!')
+                    --     for index, position in pairs(SESSION) do
+                    --         TriggerClientEvent(resName..':client:SetJoiningSessionName', position.src)
+                    --         GAME_SESSION[k].PLAYERS[index].src = nil
+                    --         GAME_SESSION[k].PLAYERS[index].status = nil
+                    --     end
+                    -- end
                     
                 end
             end
