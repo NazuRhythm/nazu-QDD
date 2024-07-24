@@ -31,6 +31,7 @@ function CREATE_PROPS_AND_ZONE()
                 true,
                 false
             )
+            SetEntityHeading(CreatedProp, 346.83)
             FreezeEntityPosition(CreatedProp, true)
             
             local radius = v.radius
@@ -103,7 +104,7 @@ function DRAW_MAIN_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgba
         0.0,
         0.0,
         0.0,
-        0.0,
+        180.0,
         0.0,
         scale,
         scale,

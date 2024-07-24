@@ -11,3 +11,11 @@ function GET_JOINING_SESSION(src)
 
     return nil, nil
 end
+
+function ALL_PLAYER_STATUS_IS(session, status)
+    if (session[1] ~= nil and session[1].status == status) and (session[2] ~= nil and session[2].status == status) then
+        return true
+    end
+
+    return false
+end

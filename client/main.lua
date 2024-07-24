@@ -16,7 +16,7 @@ function START_MONITOR_PLAYER()
             elseif STATUS == STATUS_WAITING then
                 SHOW_HELP(Loc.HelpMsg.you_wana_quit)
 
-                DRAW_MAIN_MARKER(42, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
+                DRAW_MAIN_MARKER(22, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
                 DRAW_UNDER_MARKER(1, coords.x, coords.y, coords.z - 0.98, radius + 4.0, 0.6, 71, 249, 255, 155)
             end
             
@@ -42,7 +42,7 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent(resName..':client:StartTheGame', function()
+RegisterNetEvent(resName..':client:StartSetup', function()
     STATUS = STATUS_PLAYING
     local pedId = PlayerPedId()
     local anim = 'misschinese2_bank5'
@@ -52,10 +52,31 @@ RegisterNetEvent(resName..':client:StartTheGame', function()
         Citizen.Wait(10)
     end
 
-    TaskPlayAnim(pedId, anim, 'peds_shootcans_a', 1.0, -1.0, -1, 2, 1, false, false, false)
+    TaskPlayAnim(pedId, anim, 'peds_shootcans_a', 1.0, -1.0, 5500, 0, 1, false, false, false)
 
-    STATUS = STATUS_NORMAL
+    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
+end)
 
+RegisterNetEvent(resName..':client:StartTheGame', function()
+    STATUS = STATUS_PLAYING
+    local pedId = PlayerPedId()
+    local anim = 'misschinese2_bank5'
+    local animName = 'peds_shootcans_a'
+
+    RequestAnimDict(anim)
+    while not HasAnimDictLoaded(anim) do
+        Citizen.Wait(10)
+    end
+
+    Citizen.CreateThread(function()
+        TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
+    
+        while IsEntityPlayingAnim(pedId, anim, animName, 3) do
+            Citizen.Wait(100)
+        end
+    end)
+
+    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
 end)
 
 RegisterNetEvent(resName..':client:SetJoiningSessionName', function(ZoneName)

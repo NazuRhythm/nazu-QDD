@@ -1,30 +1,25 @@
 
 GAME_SESSION = {}
 
--- Citizen.CreateThread(function()
---     for k, v in pairs(Config.Locations) do
---         GAME_SESSION[k] = { [1] = nil, [2] = nil, }
---     end
--- end)
-
 Citizen.CreateThread(function()
 
     for k, v in pairs(Config.Locations) do
-        GAME_SESSION[k] = { 
+        GAME_SESSION[k] = {
+
             [1] = {
                 player = nil,
                 status = nil,
             },
 
-            -- [2] = {
-            --     player = nil,
-            --     status = nil,
-            -- },
-
             [2] = {
-                player = 10,
-                status = STATUS_WAITING,
+                player = nil,
+                status = nil,
             },
+
+            -- [2] = {
+            --     player = 10,
+            --     status = STATUS_WAITING,
+            -- },
         }
     end
 
@@ -40,17 +35,34 @@ Citizen.CreateThread(function()
                         (v[2] ~= nil and 'PLAYER[2] = ' .. tostring(v[2].player) .. ' ' .. tostring(v[2].status) or '') .. '\n'
                     )
 
-                    if (v[1] ~= nil and v[1].status == STATUS_WAITING) and (v[2] ~= nil and v[2].status == STATUS_WAITING) then
+                    if ALL_PLAYER_STATUS_IS(v, STATUS_WAITING) then
+                        print(k, 'Waiting!')
                         for index, table in pairs(v) do
                             GAME_SESSION[k][index].status = STATUS_PLAYING
                             TriggerClientEvent(resName..':client:StartTheGame', table.player)
                         end
-                    end
 
-                    if (v[1] ~= nil and v[1].status == STATUS_FINISHED) and (v[2] ~= nil and v[2].status == STATUS_FINISHED) then
+
+                    elseif ALL_PLAYER_STATUS_IS(v, STATUS_SETUPING) then
+                        print(k, 'SETUPING!')
                         for index, table in pairs(v) do
-                            
+                            GAME_SESSION[k][index].status = STATUS_PLAYING
                             TriggerClientEvent(resName..':client:StartTheGame', table.player)
+                        end
+
+                    elseif ALL_PLAYER_STATUS_IS(v, STATUS_READY) then
+                        print(k, 'READY!')
+                        for index, table in pairs(v) do
+                            GAME_SESSION[k][index].status = STATUS_PLAYING
+                            TriggerClientEvent(resName..':client:StartTheGame', table.player)
+                        end
+
+                    elseif ALL_PLAYER_STATUS_IS(v, STATUS_FINISHED) then
+                        print(k, 'Finished!')
+                        for index, table in pairs(v) do
+                            TriggerClientEvent(resName..':client:SetJoiningSessionName', table.player)
+                            GAME_SESSION[k][index].player = nil
+                            GAME_SESSION[k][index].status = nil
                         end
                     end
                     
@@ -67,7 +79,14 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent(resName..':server:Finished')
+RegisterNetEvent(resName..':server:SetPlayerStatus', function(playerStatus)
+    local src = source
+    local key, index = GET_JOINING_SESSION(src)
+
+    if key ~= nil and index ~= nil then
+        GAME_SESSION[key][index].status = playerStatus
+    end
+end)
 
 RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
     local src = source
