@@ -19,11 +19,6 @@ Citizen.CreateThread(function()
                     status = nil,
                     score = nil,
                 },
-    
-                -- [2] = {
-                --     player = 10,
-                --     status = STATUS_WAITING,
-                -- },
 
             },
         }
@@ -44,7 +39,7 @@ Citizen.CreateThread(function()
 
                     if SESSION.STATUS == STATUS_WAITING then
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
-                            print(k, 'Waiting!')
+
                             for index, player in pairs(SESSION.PLAYERS) do
                                 GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
                                 TriggerClientEvent(resName..':client:StartSetup', player.src, k, index)
@@ -52,19 +47,17 @@ Citizen.CreateThread(function()
 
                             GAME_SESSION[k].STATUS = STATUS_SETUPING
                         end
-                        print(SESSION.STATUS)
+ 
                     elseif SESSION.STATUS == STATUS_SETUPING then
                         
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
                             for index, player in pairs(SESSION.PLAYERS) do
                                 GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartTheGame', player.src)
+                                TriggerClientEvent(resName..':client:StartTheGame', player.src, k, index)
                             end
 
                             GAME_SESSION[k].STATUS = STATUS_PLAYING
                         end
-
-                    -- elseif SESSION.STATUS == STATUS_FINISHED_SETUPING then
                     
                     elseif SESSION.STATUS == STATUS_PLAYING then
                         
@@ -86,37 +79,6 @@ Citizen.CreateThread(function()
                         end
 
                     end
-
-                    -- if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
-                    --     print(k, 'Waiting!')
-                    --     for index, position in pairs(SESSION) do
-                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                    --         TriggerClientEvent(resName..':client:StartSetup', position.src)
-                    --     end
-
-
-                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_SETUPING) then
-                    --     print(k, 'Setuping!')
-                    --     for index, position in pairs(SESSION) do
-                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                    --         TriggerClientEvent(resName..':client:StartTheGame', position.src)
-                    --     end
-
-                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_READY) then
-                    --     print(k, 'Ready!')
-                    --     for index, position in pairs(SESSION) do
-                    --         GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                    --         TriggerClientEvent(resName..':client:StartTheGame', position.src)
-                    --     end
-
-                    -- elseif ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
-                    --     print(k, 'Finished!')
-                    --     for index, position in pairs(SESSION) do
-                    --         TriggerClientEvent(resName..':client:SetJoiningSessionName', position.src)
-                    --         GAME_SESSION[k].PLAYERS[index].src = nil
-                    --         GAME_SESSION[k].PLAYERS[index].status = nil
-                    --     end
-                    -- end
                     
                 end
             end
@@ -159,7 +121,7 @@ RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
             GAME_SESSION[PlayerZone].PLAYERS[1].status = STATUS_WAITING
 
             if GAME_SESSION[PlayerZone].PLAYERS[1].src == src then
-                TriggerClientEvent(resName..':client:SetJoiningSessionName', src, PlayerZone)
+                TriggerClientEvent(resName..':client:SessionAction', src, PlayerZone)
                 TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have Joined!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
             end
 
@@ -169,7 +131,7 @@ RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
             GAME_SESSION[PlayerZone].PLAYERS[2].status = STATUS_WAITING
 
             if GAME_SESSION[PlayerZone].PLAYERS[2].src == src then
-                TriggerClientEvent(resName..':client:SetJoiningSessionName', src, PlayerZone)
+                TriggerClientEvent(resName..':client:SessionAction', src, PlayerZone)
                 TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have Joined!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
             end
 
@@ -188,7 +150,7 @@ RegisterNetEvent(resName..':server:RequestQuitGameSession', function()
     GAME_SESSION[key].PLAYERS[index].status = nil
 
     if GAME_SESSION[key].PLAYERS[index].src == nil then
-        TriggerClientEvent(resName..':client:SetJoiningSessionName', src, nil)
+        TriggerClientEvent(resName..':client:SessionAction', src, nil)
         TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have quited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
     end
 end)
@@ -201,7 +163,7 @@ RegisterNetEvent(resName..':server:RequestForceQuitPlayer', function()
     GAME_SESSION[key].PLAYERS[index].status = nil
 
     if GAME_SESSION[key].PLAYERS[index].src == nil then
-        TriggerClientEvent(resName..':client:SetJoiningSessionName', src, nil)
+        TriggerClientEvent(resName..':client:SessionAction', src, nil)
         TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'Forced out for leaving the area.', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
     end
 end)

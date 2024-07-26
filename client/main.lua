@@ -104,11 +104,13 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
                     FreezeEntityPosition(pedId, true)
                     SetEntityHeading(pedId, MyPositionHeading)
 
-                    Citizen.CreateThread(function()
-                        Citizen.Wait(2000)
+                    SetGameplayCamRelativeHeading(0)
 
-                        FreezeEntityPosition(pedId, false)
-                    end)
+                    -- Citizen.CreateThread(function()
+                    --     Citizen.Wait(2000)
+
+                    --     FreezeEntityPosition(pedId, false)
+                    -- end)
 
                     break
                 end
@@ -127,29 +129,70 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
     end)
 end)
 
-RegisterNetEvent(resName..':client:StartTheGame', function()
+RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     STATUS = STATUS_PLAYING
     local pedId = PlayerPedId()
     local anim = 'misschinese2_bank5'
     local animName = 'peds_shootcans_a'
 
-    RequestAnimDict(anim)
-    while not HasAnimDictLoaded(anim) do
-        Citizen.Wait(10)
+    local pedId = PlayerPedId()
+    local MyCoords = GetEntityCoords(pedId)
+    local LeftCoords, RightCoords = 
+        CALCULATE_OFFSET_POSITIONS(
+            Config.Locations[ZoneName].coords,
+            Config.Locations[ZoneName].heading,
+            5.0
+        )
+
+    local MyPosition = index == 1 and LeftCoords or index == 2 and RightCoords or nil
+    local MyPositionHeading = index == 1 and (Config.Locations[ZoneName].heading + 90) or index == 2 and (Config.Locations[ZoneName].heading - 90) or nil
+
+
+    -- MY_SCORE = math.random(1.0, 2.0)
+    local timeout = 5000
+    while MY_SCORE == nil do
+        Citizen.Wait(0)
+
+        -- DisablePlayerFiring(PlayerId(), true)
+
+        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑になったらマウス左クリック！！~s~')
+
+        if timeout <= 2500 then
+            DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
+        else
+            DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
+        end
+        
+        if IsControlJustPressed(0, 24) then
+            
+            if timeout >= 2500 then
+                MY_SCORE = 100.0
+            else
+                MY_SCORE = 2.0
+            end
+
+            break
+        end
+
+        timeout = timeout - 1
     end
 
+
+
     Citizen.CreateThread(function()
+
+        RequestAnimDict(anim)
+        while not HasAnimDictLoaded(anim) do
+            Citizen.Wait(10)
+        end
+
         TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
     
-        while IsEntityPlayingAnim(pedId, anim, animName, 3) do
-            Citizen.Wait(100)
-        end
+        -- while IsEntityPlayingAnim(pedId, anim, animName, 3) do
+        --     Citizen.Wait(100)
+        -- end
 
-        MY_SCORE = math.random(1.0, 2.0)
-
-        while MY_SCORE == nil do
-            Citizen.Wait(100)
-        end
+        Citizen.Wait(5000)
 
         TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
     end)
@@ -171,6 +214,7 @@ RegisterNetEvent(resName..':client:ShowWinner', function(IsWinner)
     end
 
 
+    FreezeEntityPosition(PlayerPedId(), false)
 
     RESET_PLAYER_INFO()
 end)
