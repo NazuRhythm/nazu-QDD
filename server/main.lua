@@ -38,8 +38,8 @@ Citizen.CreateThread(function()
                     
                     print(
                         'GAME_SESSION:' .. tostring(k) .. '\n' .. 
-                        (v[1] ~= nil and 'PLAYER[1] = ' .. tostring(v[1].src) .. ' ' .. tostring(v[1].status) or '') .. '\n' .. 
-                        (v[2] ~= nil and 'PLAYER[2] = ' .. tostring(v[2].src) .. ' ' .. tostring(v[2].status) or '') .. '\n'
+                        (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '') .. '\n' .. 
+                        (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '') .. '\n'
                     )
 
                     if SESSION.STATUS == STATUS_WAITING then
@@ -47,21 +47,26 @@ Citizen.CreateThread(function()
                             print(k, 'Waiting!')
                             for index, player in pairs(SESSION.PLAYERS) do
                                 GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartSetup', player.src)
+                                TriggerClientEvent(resName..':client:StartSetup', player.src, k, index)
                             end
 
                             GAME_SESSION[k].STATUS = STATUS_SETUPING
                         end
+                        print(SESSION.STATUS)
                     elseif SESSION.STATUS == STATUS_SETUPING then
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
-                            print(k, 'Finished Setuping')
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartTheGame', player.src)
-                            end
+                            -- print(k, 'Finished Setuping')
+                            -- for index, player in pairs(SESSION.PLAYERS) do
+                            --     GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                            --     -- TriggerClientEvent(resName..':client:StartTheGame', player.src)
+                            -- end
 
-                            GAME_SESSION[k].STATUS = STATUS_PLAYING
+                            GAME_SESSION[k].STATUS = STATUS_FINISHED_SETUPING
                         end
+                    elseif SESSION.STATUS == STATUS_FINISHED_SETUPING then
+
+
+
                     elseif SESSION.STATUS == STATUS_PLAYING then
                         if SESSION.PLAYERS[1].score > 0.0 and SESSION.PLAYERS[2].score > 0.0 then
                             JUDGE_WINNER(SESSION)
@@ -161,7 +166,7 @@ RegisterNetEvent(resName..':server:RequestQuitGameSession', function()
 
     if GAME_SESSION[key].PLAYERS[index].src == nil then
         TriggerClientEvent(resName..':client:SetJoiningSessionName', src, nil)
-        TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have qited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+        TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have quited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
     end
 end)
 

@@ -31,7 +31,7 @@ function CREATE_PROPS_AND_ZONE()
                 true,
                 false
             )
-            SetEntityHeading(CreatedProp, 346.83)
+            SetEntityHeading(CreatedProp, v.heading)
             FreezeEntityPosition(CreatedProp, true)
             
             local radius = v.radius
@@ -65,7 +65,7 @@ function CREATE_PROP_POLYZONE(key, coords, radius)
 
             PLAYER_ZONE_NAME = nil
 
-            if JOINED_SESSION_NAME ~= nil and STATUS ~= STATUS_PLAYING then
+            if JOINED_SESSION_NAME ~= nil and STATUS == STATUS_WAITING then
                 TriggerServerEvent(resName..':server:RequestForceQuitPlayer')
                 Citizen.CreateThread(function()
                     exports['nazu-bridge']:ShowScreenEffect('SwitchOpenMichaelOut', 1000)
@@ -92,6 +92,27 @@ function DISPLAY_SUBTITLE_FRAME(msg)
     SetTextEntry_2("STRING")
     AddTextComponentString(msg)
     DrawSubtitleTimed(1010, 1)
+end
+
+function CALCULATE_OFFSET_POTISIONS(position, heading, offsetDistance)
+    local headingRad = math.rad(heading)
+    
+    local offsetX = math.sin(headingRad) * offsetDistance
+    local offsetY = math.cos(headingRad) * offsetDistance
+    
+    local leftPosition = vector3(
+        position.x - offsetY,
+        position.y + offsetX,
+        position.z
+    )
+    
+    local rightPosition = vector3(
+        position.x + offsetY,
+        position.y - offsetX,
+        position.z
+    )
+    
+    return leftPosition, rightPosition
 end
 
 function DRAW_MAIN_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
@@ -144,7 +165,7 @@ function DRAW_UNDER_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgb
         false,
         true,
         2,
-        nil,
+        true,
         nil,
         false
     )

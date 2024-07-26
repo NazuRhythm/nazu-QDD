@@ -3,7 +3,7 @@ Locales['en'] = {
 
     HelpMsg = {
         you_wana_join = '~INPUT_PICKUP~ ~g~Join~s~',
-        you_wana_quit = '~INPUT_PICKUP~ ~r~Qit~s~',
+        you_wana_quit = '~INPUT_PICKUP~ ~r~Quit~s~',
     },
 
     JoinMenu  = {
@@ -13,7 +13,7 @@ Locales['en'] = {
 
     QuitMenu = {
         header = 'Quick Draw Duel',
-        message = 'You wanaa qit?',
+        message = 'You wanaa quit?',
     },
 
 }

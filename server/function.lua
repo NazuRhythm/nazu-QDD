@@ -1,10 +1,10 @@
 
 function GET_JOINING_SESSION(src)
 
-    for k, v in pairs(GAME_SESSION) do
-        if v[1].src == src then
+    for k, SESSION in pairs(GAME_SESSION) do
+        if SESSION.PLAYERS[1].src == src then
             return k, 1
-        elseif v[2].src == src then
+        elseif SESSION.PLAYERS[2].src == src then
             return k, 2
         end
     end
@@ -13,7 +13,7 @@ function GET_JOINING_SESSION(src)
 end
 
 function ALL_PLAYER_STATUS_IS(session, status)
-    if (session[1] ~= nil and session[1].status == status) and (session[2] ~= nil and session[2].status == status) then
+    if (session.PLAYERS[1] ~= nil and session.PLAYERS[1].status == status) and (session.PLAYERS[2] ~= nil and session.PLAYERS[2].status == status) then
         return true
     end
 

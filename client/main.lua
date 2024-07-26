@@ -16,7 +16,7 @@ function START_MONITOR_PLAYER()
             elseif STATUS == STATUS_WAITING then
                 SHOW_HELP(Loc.HelpMsg.you_wana_quit)
 
-                DRAW_MAIN_MARKER(22, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
+                DRAW_MAIN_MARKER(21, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
                 DRAW_UNDER_MARKER(1, coords.x, coords.y, coords.z - 0.98, radius + 4.0, 0.6, 71, 249, 255, 155)
             end
             
@@ -42,19 +42,45 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent(resName..':client:StartSetup', function()
+RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
     STATUS = STATUS_SETUPING
     local pedId = PlayerPedId()
-    local anim = 'misschinese2_bank5'
+    local MyCoords = GetEntityCoords(pedId)
+    local LeftCoords, RightCoords = 
+        CALCULATE_OFFSET_POTISIONS(
+            Config.Locations[ZoneName].coords,
+            Config.Locations[ZoneName].heading,
+            1.5
+        )
 
-    RequestAnimDict(anim)
-    while not HasAnimDictLoaded(anim) do
-        Citizen.Wait(10)
-    end
+    local MyPosition = index == 1 and LeftCoords or index == 2 and RightCoords or nil
+    local DistofPlayerBetweenPostion = GetDistanceBetweenCoords(MyCoords, MyPosition, false)
 
-    TaskPlayAnim(pedId, anim, 'peds_shootcans_a', 1.0, -1.0, 5500, 0, 1, false, false, false)
+    local markerColor = {}
+    
+    Citizen.CreateThread(function()
 
-    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
+        PlaySoundFrontend(-1, "Signal_On", "DLC_GR_Ambushed_Sounds", 1)
+
+        while STATUS == STATUS_SETUPING do
+            Citizen.Wait(0)
+
+            MyCoords = GetEntityCoords(pedId)
+            DistofPlayerBetweenPostion = GetDistanceBetweenCoords(MyCoords, MyPosition, true)
+
+            if DistofPlayerBetweenPostion <= 0.7 then
+                markerColor = { 3, 252, 152 }
+            else
+                markerColor = { 245, 66, 117 }
+            end
+
+            DRAW_MAIN_MARKER(20, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, markerColor[1], markerColor[2], markerColor[3], 157)
+            DRAW_UNDER_MARKER(23, MyPosition.x, MyPosition.y, MyPosition.z - 0.98, 2.0, 0.4, markerColor[1], markerColor[2], markerColor[3], 157)
+
+        end
+        STATUS = STATUS_FINISHED_SETUPING
+        TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED_SETUPING)
+    end)
 end)
 
 RegisterNetEvent(resName..':client:StartTheGame', function()
