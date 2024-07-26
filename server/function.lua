@@ -21,7 +21,7 @@ function ALL_PLAYER_STATUS_IS(session, status)
 end
 
 function JUDGE_WINNER(SESSION)
-    local winnerIndex = tonumber(SESSION.PLAYERS[1].score < SESSION.PLAYERS[2] and 1 or 2)
+    local winnerIndex = tonumber(SESSION.PLAYERS[1].score < SESSION.PLAYERS[2].score and 1 or 2)
     for index, player in pairs(SESSION.PLAYERS) do
         TriggerClientEvent(resName..':client:ShowWinner', player.src, index == winnerIndex)
     end

@@ -3,6 +3,7 @@ CURRENT_PROPS = {}
 STATUS = STATUS_NORMAL
 PLAYER_ZONE_NAME = nil
 JOINED_SESSION_NAME = nil
+MY_SCORE = nil
 
 isSubtitleDisplayed = false
 lastSubtitleTime = 0
@@ -34,6 +35,7 @@ function RESET_PLAYER_INFO()
     STATUS = STATUS_NORMAL
     PLAYER_ZONE_NAME = nil
     JOINED_SESSION_NAME = nil
+    MY_SCORE = nil
 end
 
 function DISPLAY_SUBTITLE_FRAME(msg, duration)
@@ -108,7 +110,7 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
                         FreezeEntityPosition(pedId, false)
                     end)
 
-                    STATUS = STATUS_FINISHED_SETUPING
+                    break
                 end
             else
                 markerColor = { 245, 66, 117 }
@@ -142,6 +144,14 @@ RegisterNetEvent(resName..':client:StartTheGame', function()
         while IsEntityPlayingAnim(pedId, anim, animName, 3) do
             Citizen.Wait(100)
         end
+
+        MY_SCORE = math.random(1.0, 2.0)
+
+        while MY_SCORE == nil do
+            Citizen.Wait(100)
+        end
+
+        TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
     end)
 
     TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
@@ -149,15 +159,23 @@ end)
 
 RegisterNetEvent(resName..':client:ShowWinner', function(IsWinner)
     if IsWinner then
-        
+        PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
     else
+        -- Citizen.CreateThread(function()
+        --     TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
         
+        --     while IsEntityPlayingAnim(pedId, anim, animName, 3) do
+        --         Citizen.Wait(100)
+        --     end
+        -- end)
     end
+
+
 
     RESET_PLAYER_INFO()
 end)
 
-RegisterNetEvent(resName..':client:SetJoiningSessionName', function(ZoneName)
+RegisterNetEvent(resName..':client:SessionAction', function(ZoneName)
     if ZoneName ~= nil then
         JOINED_SESSION_NAME = ZoneName
     else

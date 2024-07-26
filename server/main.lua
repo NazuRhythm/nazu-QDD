@@ -11,13 +11,13 @@ Citizen.CreateThread(function()
                 [1] = {
                     src = nil,
                     status = nil,
-                    score = 0.0,
+                    score = nil,
                 },
     
                 [2] = {
                     src = nil,
                     status = nil,
-                    score = 0.0,
+                    score = nil,
                 },
     
                 -- [2] = {
@@ -38,8 +38,8 @@ Citizen.CreateThread(function()
                     
                     print(
                         'GAME_SESSION:' .. tostring(k) .. '\n' .. 
-                        (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '') .. '\n' .. 
-                        (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '') .. '\n'
+                        (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
+                        (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '')  .. ' ' .. 'SCORE[2] = ' .. tostring(SESSION.PLAYERS[2].score) or '' .. '\n'
                     )
 
                     if SESSION.STATUS == STATUS_WAITING then
@@ -54,23 +54,37 @@ Citizen.CreateThread(function()
                         end
                         print(SESSION.STATUS)
                     elseif SESSION.STATUS == STATUS_SETUPING then
+                        
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
-                            -- print(k, 'Finished Setuping')
-                            -- for index, player in pairs(SESSION.PLAYERS) do
-                            --     GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                            --     -- TriggerClientEvent(resName..':client:StartTheGame', player.src)
-                            -- end
+                            for index, player in pairs(SESSION.PLAYERS) do
+                                GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                                TriggerClientEvent(resName..':client:StartTheGame', player.src)
+                            end
 
-                            GAME_SESSION[k].STATUS = STATUS_FINISHED_SETUPING
+                            GAME_SESSION[k].STATUS = STATUS_PLAYING
                         end
-                    elseif SESSION.STATUS == STATUS_FINISHED_SETUPING then
 
-
-
+                    -- elseif SESSION.STATUS == STATUS_FINISHED_SETUPING then
+                    
                     elseif SESSION.STATUS == STATUS_PLAYING then
-                        if SESSION.PLAYERS[1].score > 0.0 and SESSION.PLAYERS[2].score > 0.0 then
+                        
+                        if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
+
                             JUDGE_WINNER(SESSION)
+
+                            for index, player in pairs(SESSION.PLAYERS) do
+                                
+                                TriggerClientEvent(resName..':client:SessionAction', player.src)
+
+                                GAME_SESSION[k].PLAYERS[index].src = nil
+                                GAME_SESSION[k].PLAYERS[index].status = nil
+                                GAME_SESSION[k].PLAYERS[index].score = nil
+                                
+                                GAME_SESSION[k].STATUS = STATUS_WAITING
+                            end
+
                         end
+
                     end
 
                     -- if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
@@ -123,6 +137,15 @@ RegisterNetEvent(resName..':server:SetPlayerStatus', function(playerStatus)
 
     if key ~= nil and index ~= nil then
         GAME_SESSION[key].PLAYERS[index].status = playerStatus
+    end
+end)
+
+RegisterNetEvent(resName..':server:SetScore', function(playerScore)
+    local src = source
+    local key, index = GET_JOINING_SESSION(src)
+
+    if key ~= nil and index ~= nil then
+        GAME_SESSION[key].PLAYERS[index].score = tonumber(playerScore)
     end
 end)
 
