@@ -94,21 +94,26 @@ function DISPLAY_SUBTITLE_FRAME(msg)
     DrawSubtitleTimed(1010, 1)
 end
 
-function CALCULATE_OFFSET_POTISIONS(position, heading, offsetDistance)
+function CALCULATE_OFFSET_POSITIONS(position, heading, offsetDistance)
     local headingRad = math.rad(heading)
     
-    local offsetX = math.sin(headingRad) * offsetDistance
-    local offsetY = math.cos(headingRad) * offsetDistance
+    -- 向いている方向のベクトルを計算
+    local forwardX = math.sin(headingRad)
+    local forwardY = -math.cos(headingRad)
+    
+    -- 左右のベクトルを計算（向いている方向に対して垂直）
+    local rightX = -forwardY
+    local rightY = forwardX
     
     local leftPosition = vector3(
-        position.x - offsetY,
-        position.y + offsetX,
+        position.x + (rightX * -offsetDistance),
+        position.y + (rightY * -offsetDistance),
         position.z
     )
     
     local rightPosition = vector3(
-        position.x + offsetY,
-        position.y - offsetX,
+        position.x + (rightX * offsetDistance),
+        position.y + (rightY * offsetDistance),
         position.z
     )
     
