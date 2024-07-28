@@ -31,11 +31,11 @@ Citizen.CreateThread(function()
                 
                 for k, SESSION in pairs(GAME_SESSION) do
                     
-                    print(
-                        'GAME_SESSION:' .. tostring(k) .. '\n' .. 
-                        (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
-                        (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '')  .. ' ' .. 'SCORE[2] = ' .. tostring(SESSION.PLAYERS[2].score) or '' .. '\n'
-                    )
+                    -- print(
+                    --     'GAME_SESSION:' .. tostring(k) .. '\n' .. 
+                    --     (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
+                    --     (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '')  .. ' ' .. 'SCORE[2] = ' .. tostring(SESSION.PLAYERS[2].score) or '' .. '\n'
+                    -- )
 
                     if SESSION.STATUS == STATUS_WAITING then
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
@@ -63,11 +63,13 @@ Citizen.CreateThread(function()
                         
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
 
-                            JUDGE_WINNER(SESSION)
+                            
+
+                            local IsWinner = GET_WINNER(SESSION)
 
                             for index, player in pairs(SESSION.PLAYERS) do
                                 
-                                TriggerClientEvent(resName..':client:SessionAction', player.src)
+                                TriggerClientEvent(resName..':client:FinishTheGame', player.src, index == IsWinner)
 
                                 GAME_SESSION[k].PLAYERS[index].src = nil
                                 GAME_SESSION[k].PLAYERS[index].status = nil
@@ -146,12 +148,14 @@ RegisterNetEvent(resName..':server:RequestQuitGameSession', function()
     local src = source
     local key, index = GET_JOINING_SESSION(src)
 
-    GAME_SESSION[key].PLAYERS[index].src = nil
-    GAME_SESSION[key].PLAYERS[index].status = nil
-
-    if GAME_SESSION[key].PLAYERS[index].src == nil then
-        TriggerClientEvent(resName..':client:SessionAction', src, nil)
-        TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have quited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+    if key ~= nil and index ~= nil then
+        GAME_SESSION[key].PLAYERS[index].src = nil
+        GAME_SESSION[key].PLAYERS[index].status = nil
+    
+        if GAME_SESSION[key].PLAYERS[index].src == nil then
+            TriggerClientEvent(resName..':client:SessionAction', src, nil)
+            TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have quited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+        end 
     end
 end)
 

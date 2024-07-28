@@ -5,6 +5,8 @@ PLAYER_ZONE_NAME = nil
 JOINED_SESSION_NAME = nil
 MY_SCORE = nil
 
+IS_PRESSED = false
+
 isSubtitleDisplayed = false
 lastSubtitleTime = 0
 
@@ -36,6 +38,8 @@ function RESET_PLAYER_INFO()
     PLAYER_ZONE_NAME = nil
     JOINED_SESSION_NAME = nil
     MY_SCORE = nil
+
+    IS_PRESSED = false
 end
 
 function DISPLAY_SUBTITLE_FRAME(msg, duration)
@@ -130,12 +134,8 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
 end)
 
 RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
-    STATUS = STATUS_PLAYING
     local pedId = PlayerPedId()
-    local anim = 'misschinese2_bank5'
-    local animName = 'peds_shootcans_a'
-
-    local pedId = PlayerPedId()
+    local playerId = PlayerId()
     local MyCoords = GetEntityCoords(pedId)
     local LeftCoords, RightCoords = 
         CALCULATE_OFFSET_POSITIONS(
@@ -147,63 +147,86 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     local MyPosition = index == 1 and LeftCoords or index == 2 and RightCoords or nil
     local MyPositionHeading = index == 1 and (Config.Locations[ZoneName].heading + 90) or index == 2 and (Config.Locations[ZoneName].heading - 90) or nil
 
+    local BaseTimeOut = Config.Game.GameTimeOut
+    local RondomChangeTime = math.random(BaseTimeOut / 2, BaseTimeOut)
 
-    -- MY_SCORE = math.random(1.0, 2.0)
-    local timeout = 5000
-    while MY_SCORE == nil do
+    local CountDown = 3
+
+    exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
+    Citizen.Wait(1000 * CountDown + 1500)
+
+    STATUS = STATUS_PLAYING
+
+    while true do
         Citizen.Wait(0)
 
-        -- DisablePlayerFiring(PlayerId(), true)
+        DisablePlayerFiring(playerId, true)
 
-        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑になったらマウス左クリック！！~s~')
+        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑い球体~s~になったらマウス左クリック！！')
 
-        if timeout <= 2500 then
+        if BaseTimeOut <= RondomChangeTime then
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
         else
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
         end
         
-        if IsControlJustPressed(0, 24) then
+        if IS_PRESSED or BaseTimeOut <= 0.0 then
             
-            if timeout >= 2500 then
-                MY_SCORE = 100.0
-            else
+            if BaseTimeOut <= 0.0 then
+                MY_SCORE = Config.Game.GameTimeOut
+            elseif BaseTimeOut <= RondomChangeTime then
                 MY_SCORE = 2.0
+            else
+                MY_SCORE = 100.0
             end
+
+            TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
 
             break
         end
 
-        timeout = timeout - 1
+        BaseTimeOut = BaseTimeOut - 1
     end
 
+    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
+end)
 
+RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner)
+    local anim = 'misschinese2_bank5'
+    local animName = 'peds_shootcans_a'
+    local pedId = PlayerPedId()
+
+    RequestAnimDict(anim)
+    while not HasAnimDictLoaded(anim) do
+        Citizen.Wait(10)
+    end
 
     Citizen.CreateThread(function()
 
-        RequestAnimDict(anim)
-        while not HasAnimDictLoaded(anim) do
-            Citizen.Wait(10)
-        end
-
-        TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
+        TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 3000, 0, 1, false, false, false)
     
         -- while IsEntityPlayingAnim(pedId, anim, animName, 3) do
         --     Citizen.Wait(100)
         -- end
 
-        Citizen.Wait(5000)
-
-        TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
     end)
 
-    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
-end)
+    while IsEntityPlayingAnim(pedId, anim, animName, 3) do
+        Citizen.Wait(100)
+    end
 
-RegisterNetEvent(resName..':client:ShowWinner', function(IsWinner)
+    SetEntityHeading(pedId, GetEntityHeading(pedId) + 180)
+
+
     if IsWinner then
+        Citizen.CreateThread(function()
+            exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ', 4)
+        end)
         PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
     else
+        Citizen.CreateThread(function()
+            exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ', 4)
+        end)
         -- Citizen.CreateThread(function()
         --     TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
         

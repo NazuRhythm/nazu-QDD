@@ -4,6 +4,14 @@ Config.Language = 'en'
 
 Config.Notify = 'ox' -- 'ox' or 'okok' or 'custom'
 
+Config.Game = { 
+    GameTimeOut = 2300,
+
+    KeyMapping = {
+        Click = 'MOUSE_LEFT',
+    },
+}
+
 Config.Locations = {
 
     ['wdd_1'] = {
@@ -16,16 +24,6 @@ Config.Locations = {
             scale = 0.7,
             color = 26,
         },
-
-        -- position = {
-        --     [1] = {
-        --         coords = vector3()
-        --     },
-
-        --     [2] = {
-        --         coords = vector3()
-        --     },
-        -- },
     },
 
     ['wdd_2'] = {
