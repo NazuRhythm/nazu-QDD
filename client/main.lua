@@ -155,6 +155,18 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
     Citizen.Wait(1000 * CountDown + 1500)
 
+    local gunHash = GetHashKey("w_pi_wep1_gun")
+    RequestModel(gunHash)
+    while not HasModelLoaded(gunHash) do
+        Wait(500)
+    end
+
+    local coords = GetEntityCoords(pedId)
+    local gun = CreateObject(gunHash, coords.x, coords.y, coords.z, true, true, true)
+
+    local boneIndex = GetPedBoneIndex(pedId, 57005)
+    AttachEntityToEntity(gun, pedId, boneIndex, 0.13, 0.05, 0.02, 90.0, 90.0, 0.0, true, true, false, true, 1, true)
+
     STATUS = STATUS_PLAYING
 
     while true do
@@ -201,21 +213,15 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner)
         Citizen.Wait(10)
     end
 
-    Citizen.CreateThread(function()
+    SetEntityHeading(pedId, GetEntityHeading(pedId) + 180)
+
+    -- Citizen.CreateThread(function()
 
         TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 3000, 0, 1, false, false, false)
-    
-        -- while IsEntityPlayingAnim(pedId, anim, animName, 3) do
-        --     Citizen.Wait(100)
-        -- end
 
-    end)
+    -- end)
 
-    while IsEntityPlayingAnim(pedId, anim, animName, 3) do
-        Citizen.Wait(100)
-    end
-
-    SetEntityHeading(pedId, GetEntityHeading(pedId) + 180)
+    Citizen.Wait(2800)
 
 
     if IsWinner then
