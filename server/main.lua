@@ -63,13 +63,11 @@ Citizen.CreateThread(function()
                         
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
 
-                            
-
                             local IsWinner = GET_WINNER(SESSION)
 
                             for index, player in pairs(SESSION.PLAYERS) do
                                 
-                                TriggerClientEvent(resName..':client:FinishTheGame', player.src, index == IsWinner)
+                                TriggerClientEvent(resName..':client:FinishTheGame', player.src, index == IsWinner, player.score)
 
                                 GAME_SESSION[k].PLAYERS[index].src = nil
                                 GAME_SESSION[k].PLAYERS[index].status = nil

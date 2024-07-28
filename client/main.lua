@@ -148,29 +148,19 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     local MyPositionHeading = index == 1 and (Config.Locations[ZoneName].heading + 90) or index == 2 and (Config.Locations[ZoneName].heading - 90) or nil
 
     local BaseTimeOut = Config.Game.GameTimeOut
-    local RondomChangeTime = math.random(BaseTimeOut / 2, BaseTimeOut)
+    local RondomChangeTime = BaseTimeOut / 3
 
     local CountDown = 3
 
     exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
     Citizen.Wait(1000 * CountDown + 1500)
 
-    -- local gunHash = GetHashKey("w_pi_wep1_gun")
-    -- RequestModel(gunHash)
-    -- while not HasModelLoaded(gunHash) do
-    --     Wait(500)
-    -- end
-
-    -- local coords = GetEntityCoords(pedId)
-    -- local gun = CreateObject(gunHash, coords.x, coords.y, coords.z, true, true, true)
-
-    -- local boneIndex = GetPedBoneIndex(pedId, 57005)
-    -- AttachEntityToEntity(gun, pedId, boneIndex, 0.13, 0.05, 0.02, 90.0, 90.0, 0.0, true, true, false, true, 1, true)
-
     STATUS = STATUS_PLAYING
 
     while true do
         Citizen.Wait(0)
+
+        -- print('BaseTimeOut : ' .. tostring(BaseTimeOut))
 
         DisablePlayerFiring(playerId, true)
 
@@ -179,6 +169,7 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
         if BaseTimeOut <= RondomChangeTime then
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
         else
+            -- print("RondomChangeTime", RondomChangeTime)
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
         end
         
@@ -186,10 +177,10 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
             
             if BaseTimeOut <= 0.0 then
                 MY_SCORE = Config.Game.GameTimeOut
-            elseif BaseTimeOut <= RondomChangeTime then
-                MY_SCORE = 2.0
+            -- elseif BaseTimeOut <= RondomChangeTime then
+            --     MY_SCORE = 
             else
-                MY_SCORE = 100.0
+                MY_SCORE = Config.Game.GameTimeOut - BaseTimeOut
             end
 
             TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
@@ -198,12 +189,13 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
         end
 
         BaseTimeOut = BaseTimeOut - 1
+
     end
 
     TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
 end)
 
-RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner)
+RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner, score)
     local anim = 'misschinese2_bank5'
     local animName = 'peds_shootcans_a'
     local pedId = PlayerPedId()
@@ -215,31 +207,19 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner)
 
     SetEntityHeading(pedId, GetEntityHeading(pedId) + 180)
 
-    -- Citizen.CreateThread(function()
-
-        TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 3000, 0, 1, false, false, false)
-
-    -- end)
+    TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 3000, 0, 1, false, false, false)
 
     Citizen.Wait(2800)
 
-
     if IsWinner then
         Citizen.CreateThread(function()
-            exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ', 4)
+            exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ' .. tostring(score), 4)
         end)
         PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
     else
         Citizen.CreateThread(function()
-            exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ', 4)
+            exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ' .. tostring(score), 4)
         end)
-        -- Citizen.CreateThread(function()
-        --     TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 5500, 0, 1, false, false, false)
-        
-        --     while IsEntityPlayingAnim(pedId, anim, animName, 3) do
-        --         Citizen.Wait(100)
-        --     end
-        -- end)
     end
 
 
