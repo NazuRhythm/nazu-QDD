@@ -120,6 +120,47 @@ function CALCULATE_OFFSET_POSITIONS(position, heading, offsetDistance)
     return leftPosition, rightPosition
 end
 
+function SET_WEAPON(pId, currentWeapon)
+    local weaponHash = GetHashKey(WEAPON_NZQDD)
+
+    if currentWeapon ~= weaponHash then
+
+        if not HasPedGotWeapon(pId, weaponHash, false) then
+            
+            GiveWeaponToPed(pId, weaponHash, 0, false, true)
+        else
+
+            SetCurrentPedWeapon(pId, weaponHash, true)
+        end
+    end
+end
+
+function CHECK_IS_UNARMED(pId, MAP_NAME, currentWeapon)
+    local weaponHash = GetHashKey(WEAPON_NZ_UNARMED)
+    if currentWeapon ~= weaponHash then
+        SetCurrentPedWeapon(pId, weaponHash, true)
+    end
+end
+
+function CHECK_IS_NZQDD(pId, MAP_NAME, currentWeapon)
+    local weaponHash = GetHashKey(WEAPON_NZQDD)
+    if currentWeapon ~= weaponHash then
+        SetCurrentPedWeapon(pId, weaponHash, true)
+    end
+end
+
+function REMOVE_SELECTED_WEAPON()
+    local ped = PlayerPedId()
+    local weapon = GetSelectedPedWeapon(ped)
+    local unarmed = GetHashKey(WEAPON_NZ_UNARMED)
+
+    if weapon ~= unarmed then
+        SetCurrentPedWeapon(ped, unarmed, true)
+    end
+
+    RemoveWeaponFromPed(ped, GetHashKey(WEAPON_NZQDD))
+end
+
 function DRAW_MAIN_MARKER(marker, coord_x, coord_y, coord_z, scale, height, rgba_1, rgba_2, rgba_3, rgba_4)
     DrawMarker(
         marker,  -- kind of marker

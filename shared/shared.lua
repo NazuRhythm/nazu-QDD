@@ -11,4 +11,7 @@
     STATUS_PLAYING = 'PLAYING'
     STATUS_FINISHED = 'FINISHED'
 
+    WEAPON_NZ_UNARMED = 'WEAPON_UNARMED'
+    WEAPON_NZQDD = 'WEAPON_NZQDD'
+
 --- ================================ ----

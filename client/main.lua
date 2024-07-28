@@ -110,11 +110,11 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
 
                     SetGameplayCamRelativeHeading(0)
 
-                    -- Citizen.CreateThread(function()
-                    --     Citizen.Wait(2000)
+                    
 
-                    --     FreezeEntityPosition(pedId, false)
-                    -- end)
+                    SET_WEAPON(pedId, GetCurrentPedWeapon(pedId))
+
+
 
                     break
                 end
@@ -155,17 +155,17 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
     Citizen.Wait(1000 * CountDown + 1500)
 
-    local gunHash = GetHashKey("w_pi_wep1_gun")
-    RequestModel(gunHash)
-    while not HasModelLoaded(gunHash) do
-        Wait(500)
-    end
+    -- local gunHash = GetHashKey("w_pi_wep1_gun")
+    -- RequestModel(gunHash)
+    -- while not HasModelLoaded(gunHash) do
+    --     Wait(500)
+    -- end
 
-    local coords = GetEntityCoords(pedId)
-    local gun = CreateObject(gunHash, coords.x, coords.y, coords.z, true, true, true)
+    -- local coords = GetEntityCoords(pedId)
+    -- local gun = CreateObject(gunHash, coords.x, coords.y, coords.z, true, true, true)
 
-    local boneIndex = GetPedBoneIndex(pedId, 57005)
-    AttachEntityToEntity(gun, pedId, boneIndex, 0.13, 0.05, 0.02, 90.0, 90.0, 0.0, true, true, false, true, 1, true)
+    -- local boneIndex = GetPedBoneIndex(pedId, 57005)
+    -- AttachEntityToEntity(gun, pedId, boneIndex, 0.13, 0.05, 0.02, 90.0, 90.0, 0.0, true, true, false, true, 1, true)
 
     STATUS = STATUS_PLAYING
 
@@ -174,7 +174,7 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
 
         DisablePlayerFiring(playerId, true)
 
-        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑い球体~s~になったらマウス左クリック！！')
+        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑色~s~になったらマウス左クリック！！')
 
         if BaseTimeOut <= RondomChangeTime then
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
@@ -245,6 +245,7 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner)
 
     FreezeEntityPosition(PlayerPedId(), false)
 
+    REMOVE_SELECTED_WEAPON()
     RESET_PLAYER_INFO()
 end)
 

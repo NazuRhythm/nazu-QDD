@@ -10,9 +10,10 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 AddEventHandler('playerSpawned', function()
+    REMOVE_SELECTED_WEAPON()
     CREATE_PROPS_AND_ZONE()
 end)
 
 AddEventHandler('playerDropped', function ()
-
+    REMOVE_SELECTED_WEAPON()
 end)
