@@ -51,102 +51,100 @@ Citizen.CreateThread(function()
     local waitTime = 2000
     while true do
         if next(GAME_SESSION) ~= nil then
-            if next(GAME_SESSION) ~= nil then
                 
-                for k, SESSION in pairs(GAME_SESSION) do
+            for k, SESSION in pairs(GAME_SESSION) do
 
-                    -- print(
-                    --     'GAME_SESSION:' .. tostring(k) .. '\n' .. 
-                    --     (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
-                    --     (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '')  .. ' ' .. 'SCORE[2] = ' .. tostring(SESSION.PLAYERS[2].score) or '' .. '\n'
-                    -- )
+                -- print(
+                --     'GAME_SESSION:' .. tostring(k) .. '\n' .. 
+                --     (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
+                --     (SESSION.PLAYERS[2] ~= nil and 'PLAYER[2] = ' .. tostring(SESSION.PLAYERS[2].src) .. ' ' .. tostring(SESSION.PLAYERS[2].status) or '')  .. ' ' .. 'SCORE[2] = ' .. tostring(SESSION.PLAYERS[2].score) or '' .. '\n'
+                -- )
 
-                    if SESSION.STATUS == STATUS_WAITING then
-                        if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
+                if SESSION.STATUS == STATUS_WAITING then
+                    if ALL_PLAYER_STATUS_IS(SESSION, STATUS_WAITING) then
 
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartSetup', player.src, k, index)
-                            end
-
-                            GAME_SESSION[k].STATUS = STATUS_SETUPING
+                        for index, player in pairs(SESSION.PLAYERS) do
+                            GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                            TriggerClientEvent(resName..':client:StartSetup', player.src, k, index)
                         end
+
+                        GAME_SESSION[k].STATUS = STATUS_SETUPING
+                    end
  
-                    elseif SESSION.STATUS == STATUS_SETUPING then
+                elseif SESSION.STATUS == STATUS_SETUPING then
 
-                        if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
+                    if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
 
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                if player.src ~= nil then
-                                    TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
+                        for index, player in pairs(SESSION.PLAYERS) do
+                            if player.src ~= nil then
+                                TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
                                 
-                                    GAME_SESSION[k].PLAYERS[index].src = nil
-                                    GAME_SESSION[k].PLAYERS[index].status = nil
-                                    GAME_SESSION[k].PLAYERS[index].score = nil
-                                    
-                                    GAME_SESSION[k].STATUS = STATUS_WAITING
-                                end
-                            end
-
-                            goto continue
-                        end
-                        
-                        if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
-                                TriggerClientEvent(resName..':client:StartTheGame', player.src, k, index)
-                            end
-
-                            GAME_SESSION[k].STATUS = STATUS_PLAYING
-                        end
-
-                        ::continue::
-                    
-                    elseif SESSION.STATUS == STATUS_PLAYING then
-                        
-                        if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
-
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                if player.src ~= nil then
-                                    TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
-                                
-                                    GAME_SESSION[k].PLAYERS[index].src = nil
-                                    GAME_SESSION[k].PLAYERS[index].status = nil
-                                    GAME_SESSION[k].PLAYERS[index].score = nil
-                                    
-                                    GAME_SESSION[k].STATUS = STATUS_WAITING
-                                end
-                            end
-
-                            goto continue
-                        end
-
-                        if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
-
-                            local IsWinner = GET_WINNER(SESSION)
-
-                            for index, player in pairs(SESSION.PLAYERS) do
-                                
-                                TriggerClientEvent(resName..':client:FinishTheGame',
-                                    player.src,
-                                    IsWinner == 'DRAW' and 'DRAW' or IsWinner == index,
-                                    player.score
-                                )
-
                                 GAME_SESSION[k].PLAYERS[index].src = nil
                                 GAME_SESSION[k].PLAYERS[index].status = nil
                                 GAME_SESSION[k].PLAYERS[index].score = nil
-                                
+                                    
                                 GAME_SESSION[k].STATUS = STATUS_WAITING
                             end
-
                         end
 
-                        ::continue::
+                        goto continue
+                    end
+                        
+                    if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
+                        for index, player in pairs(SESSION.PLAYERS) do
+                            GAME_SESSION[k].PLAYERS[index].status = STATUS_PLAYING
+                            TriggerClientEvent(resName..':client:StartTheGame', player.src, k, index)
+                        end
+
+                        GAME_SESSION[k].STATUS = STATUS_PLAYING
+                    end
+
+                    ::continue::
+                    
+                elseif SESSION.STATUS == STATUS_PLAYING then
+                        
+                    if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
+
+                        for index, player in pairs(SESSION.PLAYERS) do
+                            if player.src ~= nil then
+                                TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
+                                
+                                GAME_SESSION[k].PLAYERS[index].src = nil
+                                GAME_SESSION[k].PLAYERS[index].status = nil
+                                GAME_SESSION[k].PLAYERS[index].score = nil
+                                    
+                                GAME_SESSION[k].STATUS = STATUS_WAITING
+                            end
+                        end
+
+                        goto continue
+                    end
+
+                    if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
+
+                        local IsWinner = GET_WINNER(SESSION)
+
+                        for index, player in pairs(SESSION.PLAYERS) do
+                                
+                            TriggerClientEvent(resName..':client:FinishTheGame',
+                                player.src,
+                                IsWinner == 'DRAW' and 'DRAW' or IsWinner == index,
+                                player.score
+                            )
+
+                            GAME_SESSION[k].PLAYERS[index].src = nil
+                            GAME_SESSION[k].PLAYERS[index].status = nil
+                            GAME_SESSION[k].PLAYERS[index].score = nil
+                            
+                            GAME_SESSION[k].STATUS = STATUS_WAITING
+                        end
 
                     end
-                    
+
+                    ::continue::
+
                 end
+                    
             end
 
             waitTime = 1000

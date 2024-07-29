@@ -105,6 +105,8 @@ end)
 
 RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     
+    print(GetGameTimer())
+
     local pedId = PlayerPedId()
     local playerId = PlayerId()
     local MyCoords = GetEntityCoords(pedId)
@@ -123,44 +125,48 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
 
     local CountDown = 3
 
-    exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
-    Citizen.Wait(1000 * CountDown + 1500)
+    -- exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
+    -- Citizen.Wait(1000 * CountDown + 1500)
 
     STATUS = STATUS_PLAYING
 
-    while JOINED_SESSION_NAME ~= nil do
-        Citizen.Wait(1)
+    Citizen.CreateThread(function()
+        while JOINED_SESSION_NAME ~= nil do
 
-        DisablePlayerFiring(playerId, true)
+            -- print(BaseTimeOut)
 
-        DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑色~s~になったらマウス左クリック！！')
-
-        if BaseTimeOut <= RondomChangeTime then
-            DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
-        else
-            DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
-        end
-        
-        if IS_PRESSED or BaseTimeOut <= 0.0 then
-            
-            if BaseTimeOut <= 0.0 then
-                MY_SCORE = Config.Game.GameTimeOut
-            -- elseif BaseTimeOut <= RondomChangeTime then
-            --     MY_SCORE = 
+            -- DisablePlayerFiring(playerId, true)
+    
+            -- DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑色~s~になったらマウス左クリック！！')
+    
+            if BaseTimeOut <= RondomChangeTime then
+                DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
             else
-                MY_SCORE = Config.Game.GameTimeOut - BaseTimeOut
+                DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
             end
-
-            TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
-
-            break
+            
+            if IS_PRESSED or BaseTimeOut <= 0.0 then
+                
+                if BaseTimeOut <= 0.0 then
+                    MY_SCORE = Config.Game.GameTimeOut
+                -- elseif BaseTimeOut <= RondomChangeTime then
+                --     MY_SCORE = 
+                else
+                    MY_SCORE = Config.Game.GameTimeOut - BaseTimeOut
+                end
+    
+                TriggerServerEvent(resName..':server:SetScore', MY_SCORE)
+    
+                break
+            end
+    
+            BaseTimeOut = BaseTimeOut - 1
+    
+            Citizen.Wait(1)
         end
-
-        BaseTimeOut = BaseTimeOut - 1
-
-    end
-
-    TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
+    
+        TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED)
+    end)
 end)
 
 RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner, score)

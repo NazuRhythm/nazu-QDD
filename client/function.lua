@@ -19,8 +19,8 @@ function CREATE_BLIP(v)
 end
 
 function CREATE_PROPS_AND_ZONE()
-    -- local model = `nz_prop_arm_wrestle_01`
-    local model = `prop_arm_wrestle_01`
+    local model = `nz_prop_arm_wrestle_01`
+    -- local model = `prop_arm_wrestle_01`
 
     if Config.Locations ~= nil then
         for k, v in pairs(Config.Locations) do
