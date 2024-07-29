@@ -105,8 +105,6 @@ end)
 
 RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     
-    print(GetGameTimer())
-
     local pedId = PlayerPedId()
     local playerId = PlayerId()
     local MyCoords = GetEntityCoords(pedId)
@@ -125,19 +123,17 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
 
     local CountDown = 3
 
-    -- exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
-    -- Citizen.Wait(1000 * CountDown + 1500)
+    exports['nazu-bridge']:ShowCountDown(97, 235, 242, CountDown)
+    Citizen.Wait(1000 * CountDown + 1500)
 
     STATUS = STATUS_PLAYING
 
     Citizen.CreateThread(function()
         while JOINED_SESSION_NAME ~= nil do
 
-            -- print(BaseTimeOut)
-
-            -- DisablePlayerFiring(playerId, true)
+            DisablePlayerFiring(playerId, true)
     
-            -- DISPLAY_SUBTITLE_FRAME('~r~赤い球体~s~が~g~緑色~s~になったらマウス左クリック！！')
+            DISPLAY_SUBTITLE_FRAME(Loc.DisplayText.if_red_sphere_turns_green)
     
             if BaseTimeOut <= RondomChangeTime then
                 DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
@@ -149,8 +145,8 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
                 
                 if BaseTimeOut <= 0.0 then
                     MY_SCORE = Config.Game.GameTimeOut
-                -- elseif BaseTimeOut <= RondomChangeTime then
-                --     MY_SCORE = 
+                elseif BaseTimeOut >= RondomChangeTime then
+                    MY_SCORE = Config.Game.GameTimeOut
                 else
                     MY_SCORE = Config.Game.GameTimeOut - BaseTimeOut
                 end
@@ -180,28 +176,27 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner, score)
     end
 
     SetEntityHeading(pedId, GetEntityHeading(pedId) + 180)
-
     TaskPlayAnim(pedId, anim, animName, 1.0, -1.0, 3000, 0, 1, false, false, false)
-
     Citizen.Wait(2800)
 
+    local time = Config.DisplayScoreTime == 'sec' and tostring(score / 1000) .. ' SEC' or tostring(score) .. ' MS'
 
     if IsWinner == 'DRAW' then
         
         Citizen.CreateThread(function()
-            exports['nazu-bridge']:ShowBanner('~b~DRAW~s~', 'Score: ' .. tostring(score), 4)
+            exports['nazu-bridge']:ShowBanner(Loc.ScaleForm.draw, 'Time: ' .. tostring(time), 4)
         end)
         PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
 
     else
         if IsWinner then
             Citizen.CreateThread(function()
-                exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ' .. tostring(score), 4)
+                exports['nazu-bridge']:ShowBanner(Loc.ScaleForm.you_win, 'Time: ' .. tostring(time), 4)
             end)
             PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
         else
             Citizen.CreateThread(function()
-                exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ' .. tostring(score), 4)
+                exports['nazu-bridge']:ShowBanner(Loc.ScaleForm.you_lose, 'Time: ' .. tostring(time), 4)
             end)
         end 
     end
@@ -219,7 +214,7 @@ RegisterNetEvent(resName..':client:ForceFinishTheGame', function()
     RESET_PLAYER_INFO()
 
     Citizen.CreateThread(function()
-        exports['nazu-bridge']:ShowBanner('Not enough players.', '', 4)
+        exports['nazu-bridge']:ShowBanner(Loc.ScaleForm.not_enough_players, '', 4)
     end)
 
     PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)

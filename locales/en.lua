@@ -11,6 +11,15 @@ Locales['en'] = {
     DisplayText = {
         go_to_your_position = '~r~Go to your position~s~',
         press_button_to_ready = '~g~Press E button to Ready~s~',
+
+        if_red_sphere_turns_green = 'Click left mouse when turns to ~g~green~s~',
+    },
+
+    ScaleForm = {
+        you_win = '~g~YOU WIN!!~s~',
+        you_lose = '~r~YOU LOSE!!~s~',
+        draw = '~b~DRAW~s~',
+        not_enough_players = 'Not enough players.',
     },
 
     JoinMenu  = {
