@@ -5,7 +5,7 @@ Config.Language = 'en'
 Config.Notify = 'ox' -- 'ox' or 'okok' or 'custom'
 
 Config.Game = { 
-    GameTimeOut = 2300,
+    GameTimeOut = 500,
 
     KeyMapping = {
         Click = 'MOUSE_LEFT',

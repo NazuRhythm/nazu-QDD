@@ -2,10 +2,34 @@
 GAME_SESSION = {}
 
 Citizen.CreateThread(function()
+    local waitTime = 1500
+    while true do
+        Citizen.Wait(waitTime)
+
+        for key, SESSION in pairs(GAME_SESSION) do
+            
+            if SESSION.PLAYERS[1].src ~= nil or SESSION.PLAYERS[2].src ~= nil then
+                for index, player in pairs(SESSION.PLAYERS) do
+                    if player.src ~= nil then
+                        if not IS_PLAYER_ONLINE(player.src) then
+                            TriggerEvent(resName..':server:RequestForceQuitPlayer', player.src, key)
+                        end 
+                    end
+                end
+            else
+                -- NzLog('SESSION['..key..']' .. ' NO ONE JOINING.')
+            end
+    
+        end
+    end
+end)
+
+Citizen.CreateThread(function()
 
     for k, v in pairs(Config.Locations) do
         GAME_SESSION[k] = {
             STATUS = STATUS_WAITING,
+            TIMEOUT = Config.Game.GameTimeOut,
             PLAYERS = {
 
                 [1] = {
@@ -30,7 +54,7 @@ Citizen.CreateThread(function()
             if next(GAME_SESSION) ~= nil then
                 
                 for k, SESSION in pairs(GAME_SESSION) do
-                    
+
                     -- print(
                     --     'GAME_SESSION:' .. tostring(k) .. '\n' .. 
                     --     (SESSION.PLAYERS[1] ~= nil and 'PLAYER[1] = ' .. tostring(SESSION.PLAYERS[1].src) .. ' ' .. tostring(SESSION.PLAYERS[1].status) or '')  .. ' ' .. 'SCORE[1] = ' .. tostring(SESSION.PLAYERS[1].score) or '' .. '\n' .. 
@@ -49,6 +73,23 @@ Citizen.CreateThread(function()
                         end
  
                     elseif SESSION.STATUS == STATUS_SETUPING then
+
+                        if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
+
+                            for index, player in pairs(SESSION.PLAYERS) do
+                                if player.src ~= nil then
+                                    TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
+                                
+                                    GAME_SESSION[k].PLAYERS[index].src = nil
+                                    GAME_SESSION[k].PLAYERS[index].status = nil
+                                    GAME_SESSION[k].PLAYERS[index].score = nil
+                                    
+                                    GAME_SESSION[k].STATUS = STATUS_WAITING
+                                end
+                            end
+
+                            goto continue
+                        end
                         
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED_SETUPING) then
                             for index, player in pairs(SESSION.PLAYERS) do
@@ -58,16 +99,39 @@ Citizen.CreateThread(function()
 
                             GAME_SESSION[k].STATUS = STATUS_PLAYING
                         end
+
+                        ::continue::
                     
                     elseif SESSION.STATUS == STATUS_PLAYING then
                         
+                        if SESSION.PLAYERS[1].src == nil or SESSION.PLAYERS[2].src == nil then
+
+                            for index, player in pairs(SESSION.PLAYERS) do
+                                if player.src ~= nil then
+                                    TriggerClientEvent(resName..':client:ForceFinishTheGame', player.src)
+                                
+                                    GAME_SESSION[k].PLAYERS[index].src = nil
+                                    GAME_SESSION[k].PLAYERS[index].status = nil
+                                    GAME_SESSION[k].PLAYERS[index].score = nil
+                                    
+                                    GAME_SESSION[k].STATUS = STATUS_WAITING
+                                end
+                            end
+
+                            goto continue
+                        end
+
                         if ALL_PLAYER_STATUS_IS(SESSION, STATUS_FINISHED) then
 
                             local IsWinner = GET_WINNER(SESSION)
 
                             for index, player in pairs(SESSION.PLAYERS) do
                                 
-                                TriggerClientEvent(resName..':client:FinishTheGame', player.src, index == IsWinner, player.score)
+                                TriggerClientEvent(resName..':client:FinishTheGame',
+                                    player.src,
+                                    IsWinner == 'DRAW' and 'DRAW' or IsWinner == index,
+                                    player.score
+                                )
 
                                 GAME_SESSION[k].PLAYERS[index].src = nil
                                 GAME_SESSION[k].PLAYERS[index].status = nil
@@ -77,6 +141,8 @@ Citizen.CreateThread(function()
                             end
 
                         end
+
+                        ::continue::
 
                     end
                     
@@ -157,16 +223,20 @@ RegisterNetEvent(resName..':server:RequestQuitGameSession', function()
     end
 end)
 
-RegisterNetEvent(resName..':server:RequestForceQuitPlayer', function()
-    local src = source
+RegisterNetEvent(resName..':server:RequestForceQuitPlayer', function(newsrc)
+    local src = newsrc or source
     local key, index = GET_JOINING_SESSION(src)
 
-    GAME_SESSION[key].PLAYERS[index].src = nil
-    GAME_SESSION[key].PLAYERS[index].status = nil
+    if key ~= nil and index ~= nil then
+        GAME_SESSION[key].PLAYERS[index].src = nil
+        GAME_SESSION[key].PLAYERS[index].status = nil
 
-    if GAME_SESSION[key].PLAYERS[index].src == nil then
-        TriggerClientEvent(resName..':client:SessionAction', src, nil)
-        TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'Forced out for leaving the area.', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+        if IS_PLAYER_ONLINE(src) then
+            if GAME_SESSION[key].PLAYERS[index].src == nil then
+                TriggerClientEvent(resName..':client:SessionAction', src, nil)
+                TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'Forced out for leaving the area.', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+            end
+        end
     end
 end)
 

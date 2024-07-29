@@ -44,8 +44,31 @@ function CREATE_PROPS_AND_ZONE()
             }
         end
     else
-        print('not founded some locations....')
+        -- print('not founded some locations....')
     end
+end
+
+function START_MONITOR_PLAYER()
+    Citizen.CreateThread(function()
+        local coords = Config.Locations[PLAYER_ZONE_NAME].coords
+        local radius = Config.Locations[PLAYER_ZONE_NAME].radius
+        while PLAYER_ZONE_NAME ~= nil and not STATUS ~= STATUS_PLAYING do
+            Citizen.Wait(0)
+            
+            if STATUS == STATUS_NORMAL then
+                SHOW_HELP(Loc.HelpMsg.you_wana_join)
+            elseif STATUS == STATUS_WAITING then
+                SHOW_HELP(Loc.HelpMsg.you_wana_quit)
+
+                DRAW_MAIN_MARKER(21, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
+                DRAW_UNDER_MARKER(1, coords.x, coords.y, coords.z - 0.98, radius + 4.0, 0.6, 71, 249, 255, 155)
+            end
+            
+            if IsControlJustPressed(0, 38) then
+                SHOW_ALERT_DIALOG()
+            end
+        end
+    end)
 end
 
 function CREATE_PROP_POLYZONE(key, coords, radius) 
@@ -98,11 +121,9 @@ end
 function CALCULATE_OFFSET_POSITIONS(position, heading, offsetDistance)
     local headingRad = math.rad(heading)
     
-    -- 向いている方向のベクトルを計算
     local forwardX = math.sin(headingRad)
     local forwardY = -math.cos(headingRad)
     
-    -- 左右のベクトルを計算（向いている方向に対して垂直）
     local rightX = -forwardY
     local rightY = forwardX
     

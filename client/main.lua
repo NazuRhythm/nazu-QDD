@@ -4,42 +4,18 @@ STATUS = STATUS_NORMAL
 PLAYER_ZONE_NAME = nil
 JOINED_SESSION_NAME = nil
 MY_SCORE = nil
-
 IS_PRESSED = false
-
-isSubtitleDisplayed = false
-lastSubtitleTime = 0
-
-function START_MONITOR_PLAYER()
-    Citizen.CreateThread(function()
-        local coords = Config.Locations[PLAYER_ZONE_NAME].coords
-        local radius = Config.Locations[PLAYER_ZONE_NAME].radius
-        while PLAYER_ZONE_NAME ~= nil and not STATUS ~= STATUS_PLAYING do
-            Citizen.Wait(0)
-            
-            if STATUS == STATUS_NORMAL then
-                SHOW_HELP(Loc.HelpMsg.you_wana_join)
-            elseif STATUS == STATUS_WAITING then
-                SHOW_HELP(Loc.HelpMsg.you_wana_quit)
-
-                DRAW_MAIN_MARKER(21, coords.x, coords.y, coords.z + 2.0, 2.0, 2.0, 71, 249, 255, 155)
-                DRAW_UNDER_MARKER(1, coords.x, coords.y, coords.z - 0.98, radius + 4.0, 0.6, 71, 249, 255, 155)
-            end
-            
-            if IsControlJustPressed(0, 38) then
-                SHOW_ALERT_DIALOG()
-            end
-        end
-    end)
-end
+IS_SUBTITLE_DISPLAYED = false
+LAST_SUBTITLE_TIME = 0
 
 function RESET_PLAYER_INFO()
     STATUS = STATUS_NORMAL
     PLAYER_ZONE_NAME = nil
     JOINED_SESSION_NAME = nil
     MY_SCORE = nil
-
     IS_PRESSED = false
+    IS_SUBTITLE_DISPLAYED = false
+    LAST_SUBTITLE_TIME = 0
 end
 
 function DISPLAY_SUBTITLE_FRAME(msg, duration)
@@ -47,16 +23,16 @@ function DISPLAY_SUBTITLE_FRAME(msg, duration)
 
     local currentTime = GetGameTimer()
 
-    if not isSubtitleDisplayed or (currentTime - lastSubtitleTime > duration) then
+    if not IS_SUBTITLE_DISPLAYED or (currentTime - LAST_SUBTITLE_TIME > duration) then
         BeginTextCommandPrint("STRING")
         AddTextComponentSubstringPlayerName(msg)
         EndTextCommandPrint(duration, true)
 
-        isSubtitleDisplayed = true
-        lastSubtitleTime = currentTime
+        IS_SUBTITLE_DISPLAYED = true
+        LAST_SUBTITLE_TIME = currentTime
 
         Citizen.SetTimeout(duration, function()
-            isSubtitleDisplayed = false
+            IS_SUBTITLE_DISPLAYED = false
         end)
     end
 end
@@ -90,7 +66,7 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
     Citizen.CreateThread(function()
 
         PlaySoundFrontend(-1, "Signal_On", "DLC_GR_Ambushed_Sounds", 1)
-
+        
         while STATUS == STATUS_SETUPING do
             Citizen.Wait(0)
 
@@ -107,14 +83,9 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
                     SetEntityCoords(pedId, MyPosition + vector3(0.0, 0.0, -0.98), true)
                     FreezeEntityPosition(pedId, true)
                     SetEntityHeading(pedId, MyPositionHeading)
-
                     SetGameplayCamRelativeHeading(0)
 
-                    
-
                     SET_WEAPON(pedId, GetCurrentPedWeapon(pedId))
-
-
 
                     break
                 end
@@ -128,12 +99,12 @@ RegisterNetEvent(resName..':client:StartSetup', function(ZoneName, index)
 
         end
 
-        STATUS = STATUS_FINISHED_SETUPING
         TriggerServerEvent(resName..':server:SetPlayerStatus', STATUS_FINISHED_SETUPING)
     end)
 end)
 
 RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
+    
     local pedId = PlayerPedId()
     local playerId = PlayerId()
     local MyCoords = GetEntityCoords(pedId)
@@ -148,7 +119,7 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
     local MyPositionHeading = index == 1 and (Config.Locations[ZoneName].heading + 90) or index == 2 and (Config.Locations[ZoneName].heading - 90) or nil
 
     local BaseTimeOut = Config.Game.GameTimeOut
-    local RondomChangeTime = BaseTimeOut / 3
+    local RondomChangeTime = BaseTimeOut / 2
 
     local CountDown = 3
 
@@ -157,10 +128,8 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
 
     STATUS = STATUS_PLAYING
 
-    while true do
-        Citizen.Wait(0)
-
-        -- print('BaseTimeOut : ' .. tostring(BaseTimeOut))
+    while JOINED_SESSION_NAME ~= nil do
+        Citizen.Wait(1)
 
         DisablePlayerFiring(playerId, true)
 
@@ -169,7 +138,6 @@ RegisterNetEvent(resName..':client:StartTheGame', function(ZoneName, index)
         if BaseTimeOut <= RondomChangeTime then
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 50, 250, 120, 157) 
         else
-            -- print("RondomChangeTime", RondomChangeTime)
             DRAW_MAIN_MARKER(28, MyPosition.x, MyPosition.y, MyPosition.z + 1.2, 1.0, 1.0, 250, 50, 110, 157) 
         end
         
@@ -211,22 +179,44 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner, score)
 
     Citizen.Wait(2800)
 
-    if IsWinner then
+
+    if IsWinner == 'DRAW' then
+        
         Citizen.CreateThread(function()
-            exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ' .. tostring(score), 4)
+            exports['nazu-bridge']:ShowBanner('~b~DRAW~s~', 'Score: ' .. tostring(score), 4)
         end)
         PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
+
     else
-        Citizen.CreateThread(function()
-            exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ' .. tostring(score), 4)
-        end)
+        if IsWinner then
+            Citizen.CreateThread(function()
+                exports['nazu-bridge']:ShowBanner('~g~YOU WIN!!~s~', 'Score: ' .. tostring(score), 4)
+            end)
+            PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
+        else
+            Citizen.CreateThread(function()
+                exports['nazu-bridge']:ShowBanner('~r~YOU LOSE!!~s~', 'Score: ' .. tostring(score), 4)
+            end)
+        end 
     end
 
 
     FreezeEntityPosition(PlayerPedId(), false)
-
     REMOVE_SELECTED_WEAPON()
     RESET_PLAYER_INFO()
+end)
+
+RegisterNetEvent(resName..':client:ForceFinishTheGame', function()
+
+    FreezeEntityPosition(PlayerPedId(), false)
+    REMOVE_SELECTED_WEAPON()
+    RESET_PLAYER_INFO()
+
+    Citizen.CreateThread(function()
+        exports['nazu-bridge']:ShowBanner('Not enough players.', '', 4)
+    end)
+
+    PlaySoundFrontend(-1, "Score_Up", "DLC_IE_PL_Player_Sounds", 1)
 end)
 
 RegisterNetEvent(resName..':client:SessionAction', function(ZoneName)

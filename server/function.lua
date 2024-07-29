@@ -21,6 +21,25 @@ function ALL_PLAYER_STATUS_IS(session, status)
 end
 
 function GET_WINNER(SESSION)
-    print(SESSION.PLAYERS[1].score, SESSION.PLAYERS[2].score)
-    return tonumber(SESSION.PLAYERS[1].score) < tonumber(SESSION.PLAYERS[2].score) and 1 or 2
+    local winnerIndex
+    
+    if tonumber(SESSION.PLAYERS[1].score) == tonumber(SESSION.PLAYERS[2].score) then
+        winnerIndex = 'DRAW'
+    elseif tonumber(SESSION.PLAYERS[1].score) < tonumber(SESSION.PLAYERS[2].score) then
+        winnerIndex = 1
+    else
+        winnerIndex = 2
+    end
+
+    return winnerIndex
+end
+
+function IS_PLAYER_ONLINE(src)
+    local playerName = GetPlayerName(src)
+    
+    if playerName ~= nil then
+        return true
+    end
+
+    return false
 end
