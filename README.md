@@ -1,4 +1,6 @@
-<div align='center'><h3>Qick Draw Duel</h3></div>
+<div align='center'><h1>Qick Draw Duel</h3></div>
+
+
 
 ## Requirements (Latest Version)
 - [PolyZone](https://github.com/mkafrin/PolyZone/releases/latest)
