@@ -1,6 +1,6 @@
 Config = Config or {}
 
-Config.Language = 'en'
+Config.Language = 'en' -- 'en' or 'ja'
 
 Config.Notify = 'ox' -- 'ox' or 'okok' or 'custom'
 
