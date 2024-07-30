@@ -1,4 +1,7 @@
-<div align='center'><h1>Qick Draw Duel</h3></div>
+<div align='center'>
+  <h1>Qick Draw Duel</h3>
+  <h3>🌟Dont forget star this repository!! 🌟</h3>
+</div>
 
 <div align='center'>
   <img src="https://github.com/user-attachments/assets/77f9324c-3470-4154-8b40-482b3d26006e"/>
