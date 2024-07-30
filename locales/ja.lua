@@ -8,6 +8,13 @@ Locales['ja'] = {
         ready = '~INPUT_PICKUP~ ~g~Ready~s~',
     },
 
+    Adviser = {
+        title = 'Notify',
+        subject = 'Quick Draw Duel',
+        u_have_joined = '参加した！',
+        u_have_quited = '退出した！',
+    },
+
     DisplayText = {
         go_to_your_position = '~r~位置に付け~s~',
         press_button_to_ready = '~g~Eボタンで準備完了~s~',

@@ -186,7 +186,7 @@ RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
 
             if GAME_SESSION[PlayerZone].PLAYERS[1].src == src then
                 TriggerClientEvent(resName..':client:SessionAction', src, PlayerZone)
-                TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have Joined!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+                TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', Loc.Adviser.title, Loc.Adviser.subject, Loc.Adviser.u_have_joined, { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
             end
 
         elseif GAME_SESSION[PlayerZone].PLAYERS[2].src == nil then
@@ -196,7 +196,7 @@ RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
 
             if GAME_SESSION[PlayerZone].PLAYERS[2].src == src then
                 TriggerClientEvent(resName..':client:SessionAction', src, PlayerZone)
-                TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have Joined!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+                TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', Loc.Adviser.title, Loc.Adviser.subject, Loc.Adviser.u_have_joined, { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
             end
 
         else
@@ -216,7 +216,7 @@ RegisterNetEvent(resName..':server:RequestQuitGameSession', function()
     
         if GAME_SESSION[key].PLAYERS[index].src == nil then
             TriggerClientEvent(resName..':client:SessionAction', src, nil)
-            TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', 'Notify', 'Quick Draw Duel', 'You have quited!', { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
+            TriggerClientEvent('nazu-bridge:client:GTAMissionMessage', src, 'CHAR_HUNTER', Loc.Adviser.title, Loc.Adviser.subject, Loc.Adviser.u_have_quited, { "Text_Arrive_Tone", "Phone_SoundSet_Default" })
         end 
     end
 end)

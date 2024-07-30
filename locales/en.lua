@@ -8,6 +8,13 @@ Locales['en'] = {
         ready = '~INPUT_PICKUP~ ~g~Ready~s~',
     },
 
+    Adviser = {
+        title = 'Notify',
+        subject = 'Quick Draw Duel',
+        u_have_joined = 'You have Joined!',
+        u_have_quited = 'You have Quited!',
+    },
+
     DisplayText = {
         go_to_your_position = '~r~Go to your position~s~',
         press_button_to_ready = '~g~Press E button to Ready~s~',
