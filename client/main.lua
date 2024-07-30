@@ -201,8 +201,7 @@ RegisterNetEvent(resName..':client:FinishTheGame', function(IsWinner, score)
         end 
     end
 
-
-    FreezeEntityPosition(PlayerPedId(), false)
+    FreezeEntityPosition(pedId, false)
     REMOVE_SELECTED_WEAPON()
     RESET_PLAYER_INFO()
 end)

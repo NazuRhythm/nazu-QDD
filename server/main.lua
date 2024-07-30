@@ -200,7 +200,7 @@ RegisterNetEvent(resName..':server:RequestJoinGameSession', function(PlayerZone)
             end
 
         else
-            ShowNotify('Quick Draw Duel', 'They are full.', 'error', src)
+            ShowNotify(Loc.Notify.title, Loc.Notify.they_r_full, 'error', src)
         end
     end
 

@@ -8,6 +8,11 @@ Locales['ja'] = {
         ready = '~INPUT_PICKUP~ ~g~Ready~s~',
     },
 
+    Notify = {
+        title = 'Quick Draw Duel',
+        they_r_full = '満員だ',
+    },
+
     Adviser = {
         title = 'Notify',
         subject = 'Quick Draw Duel',
