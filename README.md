@@ -14,6 +14,8 @@ https://youtu.be/iwNzOWXr0ho?si=oAG7TG9_Krm4yogX
 - [nazu-bridge](https://nazu.tebex.io/category/2644058)
 - [nazu-QDD-Objects](https://github.com/NazuRhythm/nazu-QDD-Objects)
 
+## Installation
+
 ### 1. Donwload latest [nazu-QDD](https://github.com/NazuRhythm/nazu-QuickDrawDuel/releases/latest) and latest Requirements script.
 
 ### 2. Write this on your server.cfg
