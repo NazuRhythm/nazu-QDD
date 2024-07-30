@@ -154,20 +154,6 @@ function SET_WEAPON(pId, currentWeapon)
     end
 end
 
-function CHECK_IS_UNARMED(pId, MAP_NAME, currentWeapon)
-    local weaponHash = GetHashKey(WEAPON_NZ_UNARMED)
-    if currentWeapon ~= weaponHash then
-        SetCurrentPedWeapon(pId, weaponHash, true)
-    end
-end
-
-function CHECK_IS_NZQDD(pId, MAP_NAME, currentWeapon)
-    local weaponHash = GetHashKey(WEAPON_NZQDD)
-    if currentWeapon ~= weaponHash then
-        SetCurrentPedWeapon(pId, weaponHash, true)
-    end
-end
-
 function REMOVE_SELECTED_WEAPON()
     local ped = PlayerPedId()
     local weapon = GetSelectedPedWeapon(ped)
